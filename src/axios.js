@@ -1,13 +1,20 @@
 import axios from 'axios';
 import _ from 'lodash';
-import config from './config';
 
 const instance = axios.create({
     baseURL: process.env.REACT_APP_BACKEND_URL,
-    withCredentials: true
+    //withCredentials: true
 });
 
-const createError = (httpStatusCode, statusCode, errorMessage, problems, errorCode = '') => {
+instance.interceptors.response.use(
+    (response) => {
+        // Thrown error for request with OK status code
+        const { data } = response;
+        return response.data
+    }
+);
+
+/* const createError = (httpStatusCode, statusCode, errorMessage, problems, errorCode = '') => {
     const error = new Error();
     error.httpStatusCode = httpStatusCode;
     error.statusCode = statusCode;
@@ -59,6 +66,6 @@ instance.interceptors.response.use(
 
         return Promise.reject(createError(response.status));
     }
-);
+); */
 
 export default instance;

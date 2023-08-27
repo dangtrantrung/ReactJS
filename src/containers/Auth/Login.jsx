@@ -7,6 +7,7 @@ import { FormattedMessage } from 'react-intl'
 
 import './Login.scss'
 import { truncate } from 'lodash'
+import { userService } from '../../services'
 
 class Login extends Component {
   constructor(props) {
@@ -16,6 +17,7 @@ class Login extends Component {
       username: 'hoidanit',
       password: '123',
       isShowPassword: false,
+      errMessage: '',
     }
   }
   handleOnChangeUserName = (event) => {
@@ -30,9 +32,11 @@ class Login extends Component {
     })
     console.log(event.target.value)
   }
-  handleLogin = () => {
+  handleLogin = async () => {
     /* alert('hoi dan it') */
-
+    this.setState({
+      errMessage: '',
+    })
     console.log(
       'username: ',
       this.state.username,
@@ -40,6 +44,25 @@ class Login extends Component {
       this.state.password,
     )
     console.log('all states: ', this.state)
+    try {
+      let data = await userService(this.state.username, this.state.password)
+      if (data && data.errCode !== 0) {
+        this.setState({ errMessage: data.message })
+      }
+      if (data && data.errCode === 0) {
+        this.setState({ errMessage: 'Succesfull login' })
+        //TODO...login success with Redux - Store - Action Redux...
+      }
+    } catch (error) {
+      //console.log(error)
+      //get http error from axios
+      if (error.response) {
+        console.log(error.response)
+        if (error.response.data) {
+          this.setState({ errMessage: error.response.data.message })
+        }
+      }
+    }
   }
   handleShowHidePassword = () => {
     //alert('click me')
@@ -84,12 +107,15 @@ class Login extends Component {
                   <i
                     className={
                       this.state.isShowPassword
-                        ? 'fas fa-eye'
-                        : 'fas fa-eye-slash'
+                        ? 'fas fa-eye-slash'
+                        : 'fas fa-eye'
                     }
                   ></i>
                 </span>
               </div>
+            </div>
+            <div className="col-12" style={{ color: 'red' }}>
+              {this.state.errMessage}
             </div>
             <div className="col-12 text-center">
               <button
