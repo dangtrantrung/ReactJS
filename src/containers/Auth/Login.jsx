@@ -7,7 +7,8 @@ import { FormattedMessage } from 'react-intl'
 
 import './Login.scss'
 import { truncate } from 'lodash'
-import { userService } from '../../services'
+import { handleLoginAPI } from '../../services/userService'
+import { userLoginSucess } from '../../store/actions'
 
 class Login extends Component {
   constructor(props) {
@@ -45,13 +46,15 @@ class Login extends Component {
     )
     console.log('all states: ', this.state)
     try {
-      let data = await userService(this.state.username, this.state.password)
+      let data = await handleLoginAPI(this.state.username, this.state.password)
       if (data && data.errCode !== 0) {
         this.setState({ errMessage: data.message })
       }
       if (data && data.errCode === 0) {
         this.setState({ errMessage: 'Succesfull login' })
         //TODO...login success with Redux - Store - Action Redux...
+        // sủ dụng redux store action để lưu thông tin user login success tại local storage
+        this.props.userLoginSucess(data.user)
       }
     } catch (error) {
       //console.log(error)
@@ -153,9 +156,9 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     navigate: (path) => dispatch(push(path)),
-    adminLoginSuccess: (adminInfo) =>
-      dispatch(actions.adminLoginSuccess(adminInfo)),
-    adminLoginFail: () => dispatch(actions.adminLoginFail()),
+
+    //userLoginFail: () => dispatch(actions.userLoginFail()),
+    userLoginSucess: (userInfo) => dispatch(actions.userLoginSucess(userInfo)),
   }
 }
 
