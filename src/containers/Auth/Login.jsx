@@ -8,7 +8,6 @@ import { FormattedMessage } from 'react-intl'
 import './Login.scss'
 import { truncate } from 'lodash'
 import { handleLoginAPI } from '../../services/userService'
-import { userLoginSucess } from '../../store/actions'
 
 class Login extends Component {
   constructor(props) {
@@ -54,7 +53,7 @@ class Login extends Component {
         this.setState({ errMessage: 'Succesfull login' })
         //TODO...login success with Redux - Store - Action Redux...
         // sủ dụng redux store action để lưu thông tin user login success tại local storage
-        this.props.userLoginSucess(data.user)
+        this.props.userLoginSuccess(data.user)
       }
     } catch (error) {
       //console.log(error)
@@ -158,7 +157,8 @@ const mapDispatchToProps = (dispatch) => {
     navigate: (path) => dispatch(push(path)),
 
     //userLoginFail: () => dispatch(actions.userLoginFail()),
-    userLoginSucess: (userInfo) => dispatch(actions.userLoginSucess(userInfo)),
+    userLoginSuccess: (userInfo) =>
+      dispatch(actions.userLoginSuccess(userInfo)),
   }
 }
 
