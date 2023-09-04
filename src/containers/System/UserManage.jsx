@@ -3,18 +3,29 @@ import { FormattedMessage } from 'react-intl'
 import { connect } from 'react-redux'
 import './UserManage.scss'
 import { getAllUserAPI } from '../../services/userService'
+
+import ModelUser from './ModalUser'
 class UserManage extends Component {
   constructor(props) {
     super(props)
-    this.state = { arrUsers: [] }
+    this.state = { arrUsers: [], isOpenModalUser: false }
+  }
+
+  handleAddNewUser = () => {
+    //alert('click me')
+    this.setState({ isOpenModalUser: true })
+  }
+  // pass a function from parent to child component
+  toggleUserModal = () => {
+    this.setState({ isOpenModalUser: !this.state.isOpenModalUser })
   }
 
   /* Life Circle
         Run component
         1.run constructor -> init state
         1.1 Update state... when parent component change states,..
-        2. did mount (set states...)
-        3. Render
+        2. did mount (set states...) did born died - unmount,...
+        3. Render re-render set state,...component many times - didmount - only one times
         4...
          */
 
@@ -40,7 +51,21 @@ class UserManage extends Component {
     let arrUsers = this.state.arrUsers
     return (
       <div className="users-container">
+        <ModelUser
+          isOpen={this.state.isOpenModalUser}
+          toggleFromParent={this.toggleUserModal}
+          test="abc"
+          fullscreen
+        />
         <div className="title text-center"> Manage users </div>
+        <div className="mx-1">
+          <button
+            className="btn btn-primary px-3"
+            onClick={() => this.handleAddNewUser()}
+          >
+            <i className="fas fa-plus"> </i>Add new User
+          </button>
+        </div>
         <div className="users-table mt-3 mx-3">
           <table id="customers">
             <tr>
@@ -53,7 +78,7 @@ class UserManage extends Component {
             {arrUsers &&
               arrUsers.map((item, index) => {
                 return (
-                  <tr>
+                  <tr key={index}>
                     <td>{item.firstName}</td>
                     <td>{item.email}</td>
                     <td>{item.lastName}</td>
